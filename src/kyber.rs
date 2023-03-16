@@ -36,10 +36,9 @@ pub fn decrypt_shared_secret(ciphertext: Vec<u8>, sec_key: Vec<u8>) -> Result<Ve
 	
 	// import ciphertext
 	let ciphertext = Ciphertext::from_bytes(&ciphertext)?;
-	println!("1");
 	
 	// import secret key
 	let sk = SecretKey::from_bytes(&sec_key)?;
-	println!("1");
+	
 	Ok(decapsulate(&ciphertext, &sk).as_bytes().to_vec())
 }

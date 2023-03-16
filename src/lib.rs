@@ -49,7 +49,6 @@ pub fn encrypt_msg(pub_key: Vec<u8>, sec_key: Vec<u8>, pfs_key: Vec<u8>, msg: &s
 			error!("failed to get kyber shared secret")
 		}
 	};
-	println!("{}", kyber_ciphertext.len());
 	
 	// derive new Perfect Forward Secrecy key
 	let mut pfs_shared_secret = hash::get_pfs_key(pfs_key);
@@ -88,7 +87,6 @@ pub fn decrypt_msg(sec_key: Vec<u8>, pub_key: Option<Vec<u8>>, pfs_key: Vec<u8>,
 	
 	// extract kyber ciphertext and symmetrically encrypted message
 	let symm_enc_msg = enc_msg.split_off(1568);
-	println!("{}", enc_msg.len());
 	
 	// decrypt kyber shared secret
 	let kyber_shared_secret = match kyber::decrypt_shared_secret(enc_msg, sec_key) {
