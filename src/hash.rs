@@ -1,7 +1,6 @@
 use openssl::sha::sha256 as hash_function;
-use hex::encode;
 
-pub fn hash(input: Vec<u8>) -> Vec<u8> {
+pub fn hash(input: &[u8]) -> Vec<u8> {
 	return hash_function(&input).to_vec();
 }
 

@@ -17,4 +17,9 @@ fn test_message_encryption() {
 	
 }
 
-
+#[test]
+fn test_curve_crypto() {
+	let (pk1, sk1) = curve_keygen();
+	let (pk2, sk2) = curve_keygen();
+	assert_eq!(get_curve_secret(sk2, pk1).unwrap(), get_curve_secret(sk1, pk2).unwrap())
+}

@@ -29,11 +29,42 @@ pub fn sign_keygen() -> (Vec<u8>, Vec<u8>) {
 	sign::keygen()
 }
 
-// This is a convenience function to generate a keypair and an id at the same time
-pub fn init() -> ((Vec<u8>, Vec<u8>), Vec<u8>) {
-	let keypair = kyber::keygen();
+// This returns a tuple with the public and secret key that got generated (for init, using x25519)
+pub fn curve_keygen() -> (Vec<u8>, Vec<u8>) {
+	x25519::keygen()
+}
+
+// This returns the shared secret derived from x25519 keys using Diffie-Hellman
+pub fn get_curve_secret(secret_key: Vec<u8>, public_key: Vec<u8>) -> Result<Vec<u8>, String> {
+	match x25519::get_shared_secret(secret_key, public_key) {
+		Ok(res) => Ok(res),
+		Err(_) => {
+			error!("failed to derive curve secret");
+		}
+	}
+}
+
+// This is a convenience function to generate the keypairs and an id at the same time
+pub fn init() -> ((Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), String) {
+	let keypair_kyber = kyber::keygen();
+	let keypair_curve = x25519::keygen();
 	let id = id::gen_id();
-	(keypair, id)
+	(keypair_kyber, keypair_curve, id)
+}
+
+// generate an id
+pub fn id_gen() -> String {
+	id::gen_id()
+}
+
+// get a temporary id from a seed and a modifier (e.g. time)
+pub fn get_temp_id(id: &str, modifier: &str) -> String {
+	id::get_temp_id(id, modifier)
+}
+
+// get next id for PFS-based id generation
+pub fn get_next_id(id: &str) -> String {
+	id::get_next(id)
 }
 
 // encrypt and sign message
@@ -56,7 +87,7 @@ pub fn encrypt_msg(pub_key: Vec<u8>, sec_key: Vec<u8>, pfs_key: Vec<u8>, msg: &s
 	// derive secret
 	let mut shared_secret = kyber_shared_secret.clone();
 	shared_secret.append(&mut pfs_shared_secret);
-	let secret = hash::hash(shared_secret);
+	let secret = hash::hash(&shared_secret);
 	
 	// sign the message
 	let signature = match sign(sec_key, msg) {
@@ -102,7 +133,7 @@ pub fn decrypt_msg(sec_key: Vec<u8>, pub_key: Option<Vec<u8>>, pfs_key: Vec<u8>,
 	// derive secret
 	let mut shared_secret = kyber_shared_secret.clone();
 	shared_secret.append(&mut pfs_shared_secret);
-	let secret = hash::hash(shared_secret);
+	let secret = hash::hash(&shared_secret);
 	
 	// decrypt message
 	let dec_msg = symm::decrypt(symm_enc_msg, secret);
