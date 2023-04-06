@@ -1,7 +1,6 @@
 mod hash;
 mod id;
 mod kyber;
-mod mdc;
 mod sign;
 mod symm;
 mod x25519;
@@ -11,6 +10,7 @@ mod tests;
 
 use sign::*;
 use hex::{encode, decode};
+use rand::Rng;
 
 // Error return macro
 macro_rules! error{
@@ -55,6 +55,14 @@ pub fn init() -> ((Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), String) {
 // generate an id
 pub fn id_gen() -> String {
 	id::gen_id()
+}
+
+// generate message detail code
+pub fn mdc_gen() -> String {
+	let id = rand::thread_rng()
+		.gen::<[u8; 4]>()
+		.to_vec();
+	encode(id)
 }
 
 // get a temporary id from a seed and a modifier (e.g. time)

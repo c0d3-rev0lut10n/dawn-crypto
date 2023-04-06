@@ -1,6 +1,6 @@
 use crate::*;
-//use crate::kyber::*;
 use rand::Rng;
+use regex::Regex;
 
 // tests for the main module
 
@@ -22,4 +22,11 @@ fn test_curve_crypto() {
 	let (pk1, sk1) = curve_keygen();
 	let (pk2, sk2) = curve_keygen();
 	assert_eq!(get_curve_secret(sk2, pk1).unwrap(), get_curve_secret(sk1, pk2).unwrap())
+}
+
+#[test]
+fn test_mdc_gen() {
+	let mdc = mdc_gen();
+	let mdc_regex = Regex::new("^[0-9a-f]{8}$").unwrap();
+	assert!(mdc_regex.is_match(&mdc))
 }

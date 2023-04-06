@@ -1,5 +1,5 @@
 [package]
-name = "dawncrypto"
+name = "dawn-crypto"
 version = "0.1.0"
 edition = "2021"
 
@@ -13,3 +13,6 @@ openssl = { version = "*", features = ["vendored"]}
 rand = { version = "*" }
 x25519-dalek = { version = "*" }
 rand_core = { version = "0.5.1" }
+
+[dev-dependencies]
+regex = { version = "*" }
