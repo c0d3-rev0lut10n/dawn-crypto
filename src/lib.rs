@@ -109,6 +109,7 @@ pub fn encrypt_msg(pub_key: Vec<u8>, sec_key: Vec<u8>, pfs_key: Vec<u8>, msg: &s
 	
 	// derive new Perfect Forward Secrecy key
 	let mut pfs_shared_secret = hash::get_pfs_key(pfs_key);
+	let new_pfs_key = pfs_shared_secret.clone();
 	
 	// derive secret
 	let mut shared_secret = kyber_shared_secret.clone();
@@ -131,7 +132,7 @@ pub fn encrypt_msg(pub_key: Vec<u8>, sec_key: Vec<u8>, pfs_key: Vec<u8>, msg: &s
 	let mut final_message = kyber_ciphertext;
 	final_message.append(&mut enc_msg.unwrap());
 	
-	Ok((final_message, pfs_shared_secret))
+	Ok((final_message, new_pfs_key))
 }
 
 // decrypt message and optionally check signature
@@ -155,6 +156,7 @@ pub fn decrypt_msg(sec_key: Vec<u8>, pub_key: Option<Vec<u8>>, pfs_key: Vec<u8>,
 	
 	// derive new Perfect Forward Secrecy key
 	let mut pfs_shared_secret = hash::get_pfs_key(pfs_key);
+	let new_pfs_key = pfs_shared_secret.clone();
 	
 	// derive secret
 	let mut shared_secret = kyber_shared_secret.clone();
@@ -183,5 +185,5 @@ pub fn decrypt_msg(sec_key: Vec<u8>, pub_key: Option<Vec<u8>>, pfs_key: Vec<u8>,
 	}
 	
 	// return the message and new PFS key
-	Ok((message.to_string(), pfs_shared_secret))
+	Ok((message.to_string(), new_pfs_key))
 }
