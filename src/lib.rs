@@ -107,6 +107,9 @@ pub fn encrypt_msg(pub_key: Vec<u8>, sec_key: Vec<u8>, pfs_key: Vec<u8>, msg: &s
 		}
 	};
 	
+	// check key length
+	if pfs_key.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 32 bytes, got {} bytes", pfs_key.len())); }
+	
 	// derive new Perfect Forward Secrecy key
 	let mut pfs_shared_secret = hash::get_pfs_key(pfs_key);
 	let new_pfs_key = pfs_shared_secret.clone();
@@ -153,6 +156,9 @@ pub fn decrypt_msg(sec_key: Vec<u8>, pub_key: Option<Vec<u8>>, pfs_key: Vec<u8>,
 			error!("could not decrypt kyber secret");
 		}
 	};
+	
+	// check key length
+	if pfs_key.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 32 bytes, got {} bytes", pfs_key.len())); }
 	
 	// derive new Perfect Forward Secrecy key
 	let mut pfs_shared_secret = hash::get_pfs_key(pfs_key);
