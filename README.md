@@ -1,4 +1,4 @@
-# Cryptographic library for the use in Dawn messenger
+# Cryptographic library for use in the Dawn messenger
 
 *licensed under GPL version 3 or higher*
 
