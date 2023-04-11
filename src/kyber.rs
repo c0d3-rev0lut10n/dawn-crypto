@@ -26,7 +26,7 @@ pub fn keygen() -> (Vec<u8>, Vec<u8>) {
 	(public_key, secret_key)
 }
 
-pub fn get_shared_secret(pub_key: Vec<u8>) -> Result<(Vec<u8>, Vec<u8>), Box<dyn std::error::Error>> {
+pub fn get_shared_secret(pub_key: &[u8]) -> Result<(Vec<u8>, Vec<u8>), Box<dyn std::error::Error>> {
 	
 	// import public key
 	let pk = PublicKey::from_bytes(&pub_key)?;
@@ -43,7 +43,7 @@ pub fn get_shared_secret(pub_key: Vec<u8>) -> Result<(Vec<u8>, Vec<u8>), Box<dyn
 	
 }
 
-pub fn decrypt_shared_secret(ciphertext: Vec<u8>, sec_key: Vec<u8>) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+pub fn decrypt_shared_secret(ciphertext: &[u8], sec_key: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
 	
 	// import ciphertext
 	let ciphertext = Ciphertext::from_bytes(&ciphertext)?;

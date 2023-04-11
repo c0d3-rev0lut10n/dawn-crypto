@@ -36,7 +36,7 @@ pub fn keygen() -> (Vec<u8>, Vec<u8>) {
 }
 
 // sign a message
-pub fn sign(sec_key: Vec<u8>, msg: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+pub fn sign(sec_key: &[u8], msg: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
 
 	let key = SecretKey::from_bytes(&sec_key)?;
 	let signature = detached_sign(msg.as_bytes(), &key)
@@ -47,7 +47,7 @@ pub fn sign(sec_key: Vec<u8>, msg: &str) -> Result<Vec<u8>, Box<dyn std::error::
 }
 
 // verify a signature
-pub fn verify(signature: Vec<u8>, pub_key: Vec<u8>, msg: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn verify(signature: &[u8], pub_key: &[u8], msg: &str) -> Result<(), Box<dyn std::error::Error>> {
 	
 	let key = PublicKey::from_bytes(&pub_key)?;
 	let signature = DetachedSignature::from_bytes(&signature)?;

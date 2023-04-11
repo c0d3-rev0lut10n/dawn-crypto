@@ -20,7 +20,7 @@ use openssl::symm::{encrypt as openssl_encrypt, decrypt as openssl_decrypt, Ciph
 use rand::Rng;
 
 // encrypt message using aes-256-cbc
-pub fn encrypt(data: Vec<u8>, key: Vec<u8>) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+pub fn encrypt(data: &[u8], key: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
 	let iv = rand::thread_rng().gen::<[u8; 16]>();
 	let aes_cipher = Cipher::aes_256_cbc();
 	let mut enc_msg = openssl_encrypt(aes_cipher, &key, Some(&iv), &data)?;
@@ -30,7 +30,8 @@ pub fn encrypt(data: Vec<u8>, key: Vec<u8>) -> Result<Vec<u8>, Box<dyn std::erro
 }
 
 // decrypt message using aes-256-cbc
-pub fn decrypt(mut ciphertext: Vec<u8>, key: Vec<u8>) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+pub fn decrypt(ciphertext: &[u8], key: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+	let mut ciphertext = ciphertext.to_vec();
 	// check the length of the ciphertext
 	if ciphertext.len() <= 16 { return Err("ciphertext too short".into()) }
 	let enc_data = ciphertext.split_off(16);

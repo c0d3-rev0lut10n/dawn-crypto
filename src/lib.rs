@@ -53,7 +53,7 @@ pub fn curve_keygen() -> (Vec<u8>, Vec<u8>) {
 }
 
 // This returns the shared secret derived from x25519 keys using Diffie-Hellman
-pub fn get_curve_secret(secret_key: Vec<u8>, public_key: Vec<u8>) -> Result<Vec<u8>, String> {
+pub fn get_curve_secret(secret_key: &[u8], public_key: &[u8]) -> Result<Vec<u8>, String> {
 	match x25519::get_shared_secret(secret_key, public_key) {
 		Ok(res) => Ok(res),
 		Err(_) => {
@@ -95,7 +95,7 @@ pub fn get_next_id(id: &str) -> String {
 
 // encrypt and sign message
 // returns the encrypted and signed message and the new Perfect Forward Secrecy key on success
-pub fn encrypt_msg(pub_key: Vec<u8>, sec_key: Vec<u8>, pfs_key: Vec<u8>, msg: &str) -> Result<(Vec<u8>, Vec<u8>), String> {
+pub fn encrypt_msg(pub_key: &[u8], sec_key: &[u8], pfs_key: &[u8], msg: &str) -> Result<(Vec<u8>, Vec<u8>), String> {
 
 	// get shared secret and ciphertext for kyber encryption
 	let (kyber_shared_secret, kyber_ciphertext) = match kyber::get_shared_secret(pub_key) {
@@ -111,7 +111,7 @@ pub fn encrypt_msg(pub_key: Vec<u8>, sec_key: Vec<u8>, pfs_key: Vec<u8>, msg: &s
 	if pfs_key.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 32 bytes, got {} bytes", pfs_key.len())); }
 	
 	// derive new Perfect Forward Secrecy key
-	let mut pfs_shared_secret = hash::get_pfs_key(pfs_key);
+	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key);
 	let new_pfs_key = pfs_shared_secret.clone();
 	
 	// derive secret
@@ -126,10 +126,11 @@ pub fn encrypt_msg(pub_key: Vec<u8>, sec_key: Vec<u8>, pfs_key: Vec<u8>, msg: &s
 			error!("failed to sign message")
 		}
 	};
-	let signed_message = (signature + "." + msg).as_bytes().to_vec();
+	let signed_message_string = signature + "." + msg;
+	let signed_message = signed_message_string.as_bytes();
 	
 	// symmetric encryption of the message using the shared secret
-	let enc_msg = symm::encrypt(signed_message, secret);
+	let enc_msg = symm::encrypt(signed_message, &secret);
 	if enc_msg.is_err() { error!("symmetric encryption failed"); }
 	
 	let mut final_message = kyber_ciphertext;
@@ -140,17 +141,17 @@ pub fn encrypt_msg(pub_key: Vec<u8>, sec_key: Vec<u8>, pfs_key: Vec<u8>, msg: &s
 
 // decrypt message and optionally check signature
 // returns the message content and the new Perfect Forward Secrecy key on success
-pub fn decrypt_msg(sec_key: Vec<u8>, pub_key: Option<Vec<u8>>, pfs_key: Vec<u8>, enc_msg: Vec<u8>) -> Result<(String, Vec<u8>), String> {
+pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_msg: &[u8]) -> Result<(String, Vec<u8>), String> {
 	
 	// check message length
 	if enc_msg.len() <= 1568+16 { error!("message too short"); }
-	let mut enc_msg = enc_msg;
+	let mut enc_msg = enc_msg.to_vec();
 	
 	// extract kyber ciphertext and symmetrically encrypted message
 	let symm_enc_msg = enc_msg.split_off(1568);
 	
 	// decrypt kyber shared secret
-	let kyber_shared_secret = match kyber::decrypt_shared_secret(enc_msg, sec_key) {
+	let kyber_shared_secret = match kyber::decrypt_shared_secret(&enc_msg, sec_key) {
 		Ok(res) => res,
 		Err(_) => {
 			error!("could not decrypt kyber secret");
@@ -161,7 +162,7 @@ pub fn decrypt_msg(sec_key: Vec<u8>, pub_key: Option<Vec<u8>>, pfs_key: Vec<u8>,
 	if pfs_key.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 32 bytes, got {} bytes", pfs_key.len())); }
 	
 	// derive new Perfect Forward Secrecy key
-	let mut pfs_shared_secret = hash::get_pfs_key(pfs_key);
+	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key);
 	let new_pfs_key = pfs_shared_secret.clone();
 	
 	// derive secret
@@ -170,7 +171,7 @@ pub fn decrypt_msg(sec_key: Vec<u8>, pub_key: Option<Vec<u8>>, pfs_key: Vec<u8>,
 	let secret = hash::hash(&shared_secret);
 	
 	// decrypt message
-	let dec_msg = symm::decrypt(symm_enc_msg, secret);
+	let dec_msg = symm::decrypt(&symm_enc_msg, &secret);
 	if dec_msg.is_err() { error!("symmetric decryption failed"); }
 	let dec_msg = dec_msg.unwrap();
 	
@@ -187,7 +188,7 @@ pub fn decrypt_msg(sec_key: Vec<u8>, pub_key: Option<Vec<u8>>, pfs_key: Vec<u8>,
 	
 	// verify signature if requested
 	if pub_key.is_some() {
-		if verify(signature, pub_key.unwrap(), message).is_err() { error!("signature verification failed"); }
+		if verify(&signature, &pub_key.unwrap(), message).is_err() { error!("signature verification failed"); }
 	}
 	
 	// return the message and new PFS key

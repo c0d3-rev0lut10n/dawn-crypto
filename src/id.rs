@@ -23,8 +23,7 @@ use crate::hash;
 // generate id seed
 pub fn gen_id() -> String {
 	let id = rand::thread_rng()
-		.gen::<[u8; 16]>()
-		.to_vec();
+		.gen::<[u8; 16]>();
 	encode(id)
 }
 
