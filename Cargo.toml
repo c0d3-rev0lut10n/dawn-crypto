@@ -13,7 +13,7 @@ ring = { version = "*" }
 openssl = { version = "*", features = ["vendored"]}
 # Forcing OpenSSL 1.1.1s as 1.1.1t does not cross-compile for android
 # Once there is a new release that builds successfully, the following line should be removed!
-openssl-src = { version = "=111.24.0" }
+openssl-src = { version = "=111.25.0" }
 rand = { version = "*" }
 x25519-dalek = { version = "*" }
 rand_core = { version = "0.5.1" }
