@@ -194,3 +194,13 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_m
 	// return the message and new PFS key
 	Ok((message.to_string(), new_pfs_key))
 }
+
+// calculates security number for given keys
+// to use it correctly, key_a needs to be the key from the party that sent the init request
+pub fn derive_security_number(key_a: &[u8], key_b: &[u8]) -> Vec<u8> {
+	
+	let mut key_a = key_a.to_vec();
+	let mut key_b = key_b.to_vec();
+	key_a.append(&mut key_b);
+	hash::hash(&key_a)
+}
