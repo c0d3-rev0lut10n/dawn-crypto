@@ -83,6 +83,14 @@ pub fn mdc_gen() -> String {
 	encode(id)
 }
 
+// generate a key for symmetric encryption (e.g. for sending files) using a CSPRNG
+pub fn sym_key_gen() -> Vec<u8> {
+	let key = rand::thread_rng()
+		.gen::<[u8; 32]>()
+		.to_vec();
+	key
+}
+
 // get a temporary id from a seed and a modifier (e.g. time)
 pub fn get_temp_id(id: &str, modifier: &str) -> String {
 	id::get_temp_id(id, modifier)
