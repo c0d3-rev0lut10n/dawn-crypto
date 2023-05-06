@@ -203,6 +203,20 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_m
 	Ok((message.to_string(), new_pfs_key))
 }
 
+// encrypt data using a symmetric key
+pub fn encrypt_data(data: &[u8], key: &[u8]) -> Result<Vec<u8>, String> {
+	let encrypted = symm::encrypt(data, key);
+	if encrypted.is_err() { error!("symmetric encryption failed"); }
+	Ok(encrypted.unwrap())
+}
+
+// decrypt data using a symmetric key
+pub fn decrypt_data(encrypted_data: &[u8], key: &[u8]) -> Result<Vec<u8>, String> {
+	let data = symm::decrypt(encrypted_data, key);
+	if data.is_err() { error!("symmetric decryption failed"); }
+	Ok(data.unwrap())
+}
+
 // calculates security number for given keys
 // to use it correctly, key_a needs to be the key from the party that sent the init request
 pub fn derive_security_number(key_a: &[u8], key_b: &[u8]) -> String {
