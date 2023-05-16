@@ -50,3 +50,13 @@ fn test_mdc_gen() {
 	let mdc_regex = Regex::new("^[0-9a-f]{8}$").unwrap();
 	assert!(mdc_regex.is_match(&mdc))
 }
+
+#[test]
+fn test_data_encryption() {
+	let key = sym_key_gen();
+	let data = vec![0,0,42,42];
+	let ciphertext = encrypt_data(&data, &key).unwrap();
+	assert_ne!(ciphertext, data);
+	let dec_data = decrypt_data(&ciphertext, &key).unwrap();
+	assert_eq!(data, dec_data);
+}
