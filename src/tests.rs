@@ -60,3 +60,9 @@ fn test_data_encryption() {
 	let dec_data = decrypt_data(&ciphertext, &key).unwrap();
 	assert_eq!(data, dec_data);
 }
+
+#[test]
+fn test_invalid_inputs() {
+	let (curve_pk, curve_sk) = curve_keygen();
+	assert!(get_curve_secret(&curve_sk, &vec![]).is_err());
+}
