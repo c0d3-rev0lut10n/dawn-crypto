@@ -92,7 +92,7 @@ pub fn sym_key_gen() -> Vec<u8> {
 }
 
 // get a temporary id from a seed and a modifier (e.g. time)
-pub fn get_temp_id(id: &str, modifier: &str) -> String {
+pub fn get_temp_id(id: &str, modifier: &str) -> Result<String, String> {
 	id::get_temp_id(id, modifier)
 }
 
