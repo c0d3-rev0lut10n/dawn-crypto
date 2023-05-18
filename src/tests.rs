@@ -64,5 +64,7 @@ fn test_data_encryption() {
 #[test]
 fn test_invalid_inputs() {
 	let (curve_pk, curve_sk) = curve_keygen();
+	let id = id_gen();
 	assert!(get_curve_secret(&curve_sk, &vec![]).is_err());
+	assert!(get_temp_id(&id, "").is_err());
 }
