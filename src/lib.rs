@@ -97,7 +97,7 @@ pub fn get_temp_id(id: &str, modifier: &str) -> Result<String, String> {
 }
 
 // get next id for PFS-based id generation
-pub fn get_next_id(id: &str) -> String {
+pub fn get_next_id(id: &str) -> Result<String, String> {
 	id::get_next(id)
 }
 

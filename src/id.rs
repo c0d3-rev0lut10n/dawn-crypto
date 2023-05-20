@@ -38,7 +38,10 @@ pub fn get_temp_id(id: &str, modifier: &str) -> Result<String, String> {
 }
 
 // hash with sha256 to get next id-seed or aes-key-seed, used for Perfect Forward Secrecy
-pub fn get_next(current: &str) -> String {
+pub fn get_next(current: &str) -> Result<String, String> {
+	if current.is_empty() {
+		return Err("current id was empty".to_string())
+	}
 	let hash = encode(&hash::hash(current.as_bytes()));
-	hash
+	Ok(hash)
 }
