@@ -17,6 +17,5 @@ openssl-src = { version = "=111.25.0" }
 rand = { version = "*" }
 x25519-dalek = { version = "*" }
 rand_core = { version = "0.5.1" }
-
-[dev-dependencies]
 regex = { version = "*" }
+lazy_static = { version = "*" }

@@ -23,6 +23,9 @@ mod sign;
 mod symm;
 mod x25519;
 
+#[macro_use]
+extern crate lazy_static;
+
 #[cfg(test)]
 mod tests;
 
