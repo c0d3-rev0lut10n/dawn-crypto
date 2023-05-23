@@ -22,13 +22,13 @@ use regex::Regex;
 use crate::hash;
 
 lazy_static! {
-	static ref IS_ID_SEED: Regex = Regex::new("^[0-9a-f]{32}$").unwrap();
+	static ref IS_ID_SEED: Regex = Regex::new("^[0-9a-f]{64}$").unwrap();
 }
 
 // generate id seed
 pub fn gen_id() -> String {
 	let id = rand::thread_rng()
-		.gen::<[u8; 16]>();
+		.gen::<[u8; 32]>();
 	encode(id)
 }
 
