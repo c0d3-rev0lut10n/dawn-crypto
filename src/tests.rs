@@ -70,6 +70,15 @@ fn test_get_temp_id() {
 }
 
 #[test]
+fn test_get_next_id() {
+	let id = id_gen();
+	assert!(get_next_id("").is_err());
+	assert!(get_next_id("a23e").is_err());
+	assert!(get_next_id("wrong").is_err());
+	assert!(get_next_id(&id).is_ok())
+}
+
+#[test]
 fn test_invalid_inputs() {
 	let (curve_pk, curve_sk) = curve_keygen();
 	assert!(get_curve_secret(&curve_sk, &vec![]).is_err());
