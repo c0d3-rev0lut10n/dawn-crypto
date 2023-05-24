@@ -222,10 +222,12 @@ pub fn decrypt_data(encrypted_data: &[u8], key: &[u8]) -> Result<Vec<u8>, String
 
 // calculates security number for given keys
 // to use it correctly, key_a needs to be the key from the party that sent the init request
-pub fn derive_security_number(key_a: &[u8], key_b: &[u8]) -> String {
-	
+pub fn derive_security_number(key_a: &[u8], key_b: &[u8]) -> Result<String, String> {
+	if key_a.len() == 0 || key_b.len() == 0 {
+		return Err("Both keys must be longer than zero bytes each".to_string())
+	}
 	let mut key_a = key_a.to_vec();
 	let mut key_b = key_b.to_vec();
 	key_a.append(&mut key_b);
-	encode(hash::hash(&key_a))
+	Ok(encode(hash::hash(&key_a)))
 }
