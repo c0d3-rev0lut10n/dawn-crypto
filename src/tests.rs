@@ -79,7 +79,7 @@ fn test_get_next_id() {
 }
 
 #[test]
-fn test_invalid_inputs() {
+fn test_get_curve_secret() {
 	let (curve_pk, curve_sk) = curve_keygen();
 	assert!(get_curve_secret(&curve_sk, &vec![]).is_err());
 }
