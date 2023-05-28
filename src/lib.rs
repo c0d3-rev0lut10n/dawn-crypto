@@ -21,6 +21,7 @@ mod id;
 mod kyber;
 mod sign;
 mod symm;
+mod warning;
 mod x25519;
 
 #[macro_use]
@@ -32,6 +33,7 @@ mod tests;
 use sign::*;
 use hex::{encode, decode};
 use rand::Rng;
+use crate::warning::*;
 
 // Error return macro
 macro_rules! error{
@@ -104,9 +106,9 @@ pub fn get_next_id(id: &str) -> Result<String, String> {
 	id::get_next(id)
 }
 
-// encrypt and sign message
+// encrypt (and optionally sign) message
 // returns the encrypted and signed message and the new Perfect Forward Secrecy key on success
-pub fn encrypt_msg(pub_key: &[u8], sec_key: &[u8], pfs_key: &[u8], msg: &str) -> Result<(Vec<u8>, Vec<u8>), String> {
+pub fn encrypt_msg(pub_key: &[u8], sec_key: Option<&[u8]>, pfs_key: &[u8], msg: &str) -> Result<(Vec<u8>, Vec<u8>), String> {
 
 	// get shared secret and ciphertext for kyber encryption
 	let (kyber_shared_secret, kyber_ciphertext) = match kyber::get_shared_secret(pub_key) {
@@ -130,13 +132,19 @@ pub fn encrypt_msg(pub_key: &[u8], sec_key: &[u8], pfs_key: &[u8], msg: &str) ->
 	shared_secret.append(&mut pfs_shared_secret);
 	let secret = hash::hash(&shared_secret);
 	
-	// sign the message
-	let signature = match sign(sec_key, msg) {
-		Ok(sig) => encode(sig),
-		Err(_) => {
-			error!("failed to sign message")
-		}
-	};
+	// sign the message if requested
+	let signature;
+	if sec_key.is_some() {
+		signature = match sign(sec_key.unwrap(), msg) {
+			Ok(sig) => encode(sig),
+			Err(_) => {
+				error!("failed to sign message")
+			}
+		};
+	}
+	else {
+		signature = "".to_string();
+	}
 	let signed_message_string = signature + "." + msg;
 	let signed_message = signed_message_string.as_bytes();
 	
@@ -151,8 +159,11 @@ pub fn encrypt_msg(pub_key: &[u8], sec_key: &[u8], pfs_key: &[u8], msg: &str) ->
 }
 
 // decrypt message and optionally check signature
-// returns the message content and the new Perfect Forward Secrecy key on success
-pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_msg: &[u8]) -> Result<(String, Vec<u8>), String> {
+// returns the message content and the new Perfect Forward Secrecy key on success. Also, there is a cumulative byte indicating warnings.
+pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_msg: &[u8]) -> Result<(String, Vec<u8>, u8), String> {
+	
+	// initialize warnings
+	let mut warning = 0u8;
 	
 	// check message length
 	if enc_msg.len() <= 1568+16 { error!("message too short"); }
@@ -189,7 +200,14 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_m
 	// split signature and message
 	let signed_msg_string = String::from_utf8_lossy(&dec_msg);
 	let (signature, message) = match signed_msg_string.split_once(".") {
-		Some((sig, msg)) => (decode(&sig), msg),
+		Some((sig, msg)) => {
+			// since signatures are optional, handle a missing signature gracefully
+			if sig.len() == 0 {
+				warning += NO_SIGNATURE;
+				return Ok((msg.to_string(), new_pfs_key, warning))
+			}
+			(decode(&sig), msg)
+		},
 		None => { error!("signature not found"); }
 	};
 	let signature = match signature {
@@ -203,7 +221,7 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_m
 	}
 	
 	// return the message and new PFS key
-	Ok((message.to_string(), new_pfs_key))
+	Ok((message.to_string(), new_pfs_key, warning))
 }
 
 // encrypt data using a symmetric key

@@ -28,10 +28,10 @@ fn test_message_encryption() {
 	let (pk, sk) = kyber_keygen();
 	let (sign_pk, sign_sk) = sign_keygen();
 	let pfs_key = rand::thread_rng().gen::<[u8; 32]>();
-	let (enc_msg, new_key) = encrypt_msg(&pk, &sign_sk, &pfs_key, "testing message encryption").unwrap();
+	let (enc_msg, new_key) = encrypt_msg(&pk, Some(&sign_sk), &pfs_key, "testing message encryption").unwrap();
 	assert_ne!(pfs_key.to_vec(), new_key);
 	assert_eq!(new_key.len(), 32);
-	let (dec_msg, other_new_key) = decrypt_msg(&sk, Some(&sign_pk), &pfs_key, &enc_msg).unwrap();
+	let (dec_msg, other_new_key, warning) = decrypt_msg(&sk, Some(&sign_pk), &pfs_key, &enc_msg).unwrap();
 	assert_eq!(new_key, other_new_key);
 	assert_eq!(dec_msg, "testing message encryption".to_string());
 	
