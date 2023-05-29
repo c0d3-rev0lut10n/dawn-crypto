@@ -16,4 +16,5 @@
 	along with Dawn.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+pub const NONE: u8 = 0;
 pub const NO_SIGNATURE: u8 = 1;
