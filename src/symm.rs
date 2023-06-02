@@ -21,6 +21,9 @@ use rand::Rng;
 
 // encrypt message using aes-256-cbc
 pub fn encrypt(data: &[u8], key: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+	if key.len() != 32 {
+		return Err("key length invalid".into())
+	}
 	let iv = rand::thread_rng().gen::<[u8; 16]>();
 	let aes_cipher = Cipher::aes_256_cbc();
 	let mut enc_msg = openssl_encrypt(aes_cipher, &key, Some(&iv), &data)?;
@@ -31,6 +34,9 @@ pub fn encrypt(data: &[u8], key: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::E
 
 // decrypt message using aes-256-cbc
 pub fn decrypt(ciphertext: &[u8], key: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+	if key.len() != 32 {
+		return Err("key length invalid".into())
+	}
 	let mut ciphertext = ciphertext.to_vec();
 	// check the length of the ciphertext
 	if ciphertext.len() <= 16 { return Err("ciphertext too short".into()) }
