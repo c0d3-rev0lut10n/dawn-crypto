@@ -21,7 +21,7 @@ mod id;
 mod kyber;
 mod sign;
 mod symm;
-mod warning;
+pub mod warning;
 mod x25519;
 
 #[macro_use]
