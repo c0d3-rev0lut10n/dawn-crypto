@@ -33,6 +33,29 @@ pub fn gen_id() -> String {
 	encode(id)
 }
 
+// generate temporary id using seed and default modifier
+pub fn get_temp_id(id: &str) -> Result<String, String> {
+	if !IS_ID_SEED.is_match(id) {
+		return Err("invalid id".to_string())
+	}
+	
+	// get current time
+	let c_time = Utc::now();
+	let date_modifier = c_time.date_naive().format("%Y%m%d").to_string();
+	let time_modifier = c_time.time().format("%H").to_string().parse::<u8>();
+	if time_modifier.is_err() {
+		return Err("failed to format time".to_string());
+	}
+	
+	// round to 4-hour resolution
+	let time_modifier = time_modifier.unwrap() / 4;
+	
+	let modifier = date_modifier + &time_modifier.to_string();
+	let input = String::from(id) + &modifier;
+	let hash = encode(&hash::hash(input.as_bytes()));
+	Ok(hash)
+}
+
 // generate temporary id using seed and modifier (i.e. time)
 pub fn get_custom_temp_id(id: &str, modifier: &str) -> Result<String, String> {
 	if !IS_ID_SEED.is_match(id) {
