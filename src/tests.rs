@@ -20,6 +20,7 @@
 use crate::*;
 use rand::Rng;
 use regex::Regex;
+use chrono::prelude::*;
 
 // tests for the main module
 
@@ -84,6 +85,22 @@ fn test_data_encryption() {
 	assert_ne!(ciphertext, data);
 	let dec_data = decrypt_data(&ciphertext, &key).unwrap();
 	assert_eq!(data, dec_data);
+}
+
+#[test]
+fn test_get_temp_id() {
+	let id = id_gen();
+	
+	let c_time = Utc::now();
+	let date_modifier = c_time.date_naive().format("%Y%m%d").to_string();
+	let time_modifier = c_time.time().format("%H").to_string().parse::<u8>();
+	
+	// round to 4-hour resolution
+	let time_modifier = time_modifier.unwrap() / 4;
+	
+	let modifier = date_modifier + &time_modifier.to_string();
+	println!("[test_get_temp_id] modifier string: {}", modifier);
+	assert_eq!(get_temp_id(&id), get_custom_temp_id(&id, &modifier));
 }
 
 #[test]
