@@ -20,6 +20,7 @@ use hex::encode;
 use rand::Rng;
 use regex::Regex;
 use crate::hash;
+use chrono::{Utc, prelude::*};
 
 lazy_static! {
 	static ref IS_ID_SEED: Regex = Regex::new("^[0-9a-f]{64}$").unwrap();
@@ -33,7 +34,7 @@ pub fn gen_id() -> String {
 }
 
 // generate temporary id using seed and modifier (i.e. time)
-pub fn get_temp_id(id: &str, modifier: &str) -> Result<String, String> {
+pub fn get_custom_temp_id(id: &str, modifier: &str) -> Result<String, String> {
 	if !IS_ID_SEED.is_match(id) {
 		return Err("invalid id".to_string())
 	}

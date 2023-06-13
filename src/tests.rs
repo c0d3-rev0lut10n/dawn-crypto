@@ -87,11 +87,11 @@ fn test_data_encryption() {
 }
 
 #[test]
-fn test_get_temp_id() {
+fn test_get_custom_temp_id() {
 	let id = id_gen();
-	assert!(get_temp_id(&id, "").is_err());
-	assert!(get_temp_id("wrong id", "42").is_err());
-	assert!(get_temp_id(&id, "42").is_ok());
+	assert!(get_custom_temp_id(&id, "").is_err());
+	assert!(get_custom_temp_id("wrong id", "42").is_err());
+	assert!(get_custom_temp_id(&id, "42").is_ok());
 }
 
 #[test]
