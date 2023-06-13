@@ -19,3 +19,4 @@ x25519-dalek = { version = "*" }
 rand_core = { version = "0.5.1" }
 regex = { version = "*" }
 lazy_static = { version = "*" }
+chrono = { version = "*" }
