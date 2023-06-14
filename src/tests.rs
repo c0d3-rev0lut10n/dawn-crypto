@@ -99,7 +99,8 @@ fn test_get_temp_id() {
 	let time_modifier = time_modifier.unwrap() / 4;
 	
 	let modifier = date_modifier + &time_modifier.to_string();
-	println!("[test_get_temp_id] modifier string: {}", modifier);
+	let human_readable_utc = c_time.date_naive().format("%d.%m.%Y").to_string() + " " + &c_time.time().format("%H:%M:%S").to_string();
+	println!("\n[test_get_temp_id] UTC: {}\n[test_get_temp_id] modifier string: {}\n", human_readable_utc, modifier);
 	assert_eq!(get_temp_id(&id), get_custom_temp_id(&id, &modifier));
 }
 
