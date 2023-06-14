@@ -16,6 +16,7 @@
 	along with Dawn.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#![allow(unused_variables)]
 
 use crate::*;
 use rand::Rng;
