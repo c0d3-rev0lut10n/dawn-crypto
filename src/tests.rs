@@ -116,10 +116,11 @@ fn test_get_custom_temp_id() {
 #[test]
 fn test_get_next_id() {
 	let id = id_gen();
-	assert!(get_next_id("").is_err());
-	assert!(get_next_id("a23e").is_err());
-	assert!(get_next_id("wrong").is_err());
-	assert!(get_next_id(&id).is_ok())
+	assert!(get_next_id("", "").is_err());
+	assert!(get_next_id("a23e", "abcdabdcabdcabdc").is_err());
+	assert!(get_next_id("wrong", "hi").is_err());
+	assert!(get_next_id(&id, "invalid").is_err());
+	assert!(get_next_id(&id, "42abdc42abdceffe").is_ok())
 }
 
 #[test]

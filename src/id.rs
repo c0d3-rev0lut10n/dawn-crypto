@@ -24,6 +24,7 @@ use chrono::{Utc, prelude::*};
 
 lazy_static! {
 	static ref IS_ID_SEED: Regex = Regex::new("^[0-9a-f]{64}$").unwrap();
+	static ref IS_SALT: Regex = Regex::new("^[0-9a-f]{16}$").unwrap();
 }
 
 // generate id seed
@@ -70,10 +71,15 @@ pub fn get_custom_temp_id(id: &str, modifier: &str) -> Result<String, String> {
 }
 
 // hash with sha256 to get next id-seed or aes-key-seed, used for Perfect Forward Secrecy
-pub fn get_next(current: &str) -> Result<String, String> {
+pub fn get_next(current: &str, salt: &str) -> Result<String, String> {
 	if !IS_ID_SEED.is_match(current) {
 		return Err("invalid id".to_string())
 	}
-	let hash = encode(&hash::hash(current.as_bytes()));
+	if !IS_SALT.is_match(salt) {
+		return Err("invalid salt".to_string())
+	}
+	let mut hash_input = current.as_bytes().to_vec();
+	hash_input.append(&mut salt.as_bytes().to_vec());
+	let hash = encode(&hash::hash(&hash_input));
 	Ok(hash)
 }

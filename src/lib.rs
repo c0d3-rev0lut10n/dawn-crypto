@@ -107,8 +107,8 @@ pub fn get_custom_temp_id(id: &str, modifier: &str) -> Result<String, String> {
 }
 
 // get next id for PFS-based id generation
-pub fn get_next_id(id: &str) -> Result<String, String> {
-	id::get_next(id)
+pub fn get_next_id(id: &str, salt: &str) -> Result<String, String> {
+	id::get_next(id, salt)
 }
 
 // encrypt (and optionally sign) message
