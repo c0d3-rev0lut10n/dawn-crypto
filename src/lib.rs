@@ -113,7 +113,7 @@ pub fn get_next_id(id: &str, salt: &str) -> Result<String, String> {
 
 // encrypt (and optionally sign) message
 // returns the encrypted and signed message and the new Perfect Forward Secrecy key on success
-pub fn encrypt_msg(pub_key: &[u8], sec_key: Option<&[u8]>, pfs_key: &[u8], msg: &str) -> Result<(Vec<u8>, Vec<u8>), String> {
+pub fn encrypt_msg(pub_key: &[u8], sec_key: Option<&[u8]>, pfs_key: &[u8], salt: &[u8], msg: &str) -> Result<(Vec<u8>, Vec<u8>), String> {
 
 	// get shared secret and ciphertext for kyber encryption
 	let (kyber_shared_secret, kyber_ciphertext) = match kyber::get_shared_secret(pub_key) {
@@ -128,8 +128,11 @@ pub fn encrypt_msg(pub_key: &[u8], sec_key: Option<&[u8]>, pfs_key: &[u8], msg: 
 	// check key length
 	if pfs_key.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 32 bytes, got {} bytes", pfs_key.len())); }
 	
+	// check salt length
+	if salt.len() != 16 { error!(format!("CRITICAL: PFS key has wrong length. Expected 16 bytes, got {} bytes", salt.len())); }
+	
 	// derive new Perfect Forward Secrecy key
-	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key);
+	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key, &salt);
 	let new_pfs_key = pfs_shared_secret.clone();
 	
 	// derive secret
@@ -165,7 +168,7 @@ pub fn encrypt_msg(pub_key: &[u8], sec_key: Option<&[u8]>, pfs_key: &[u8], msg: 
 
 // decrypt message and optionally check signature
 // returns the message content and the new Perfect Forward Secrecy key on success. Also, there is a cumulative byte indicating warnings.
-pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_msg: &[u8]) -> Result<(String, Vec<u8>, u8), String> {
+pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], salt: &[u8], enc_msg: &[u8]) -> Result<(String, Vec<u8>, u8), String> {
 	
 	// initialize warnings
 	let mut warning = 0u8;
@@ -173,6 +176,9 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_m
 	// check message length
 	if enc_msg.len() <= 1568+16 { error!("message too short"); }
 	let mut enc_msg = enc_msg.to_vec();
+	
+	// check salt length
+	if salt.len() != 16 { error!(format!("CRITICAL: PFS key has wrong length. Expected 16 bytes, got {} bytes", salt.len())); }
 	
 	// extract kyber ciphertext and symmetrically encrypted message
 	let symm_enc_msg = enc_msg.split_off(1568);
@@ -189,7 +195,7 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], enc_m
 	if pfs_key.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 32 bytes, got {} bytes", pfs_key.len())); }
 	
 	// derive new Perfect Forward Secrecy key
-	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key);
+	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key, &salt);
 	let new_pfs_key = pfs_shared_secret.clone();
 	
 	// derive secret
