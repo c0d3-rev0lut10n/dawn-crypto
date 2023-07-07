@@ -77,6 +77,16 @@ pub fn get_kyber_secret(public_key: &[u8]) -> Result<(Vec<u8>, Vec<u8>), String>
 	}
 }
 
+// This returns the shared secret from a kyber ciphertext and the corresponding secret key
+pub fn decrypt_kyber_secret(ciphertext: &[u8], secret_key: &[u8]) -> Result<Vec<u8>, String> {
+	match kyber::decrypt_shared_secret(ciphertext, secret_key) {
+		Ok(res) => Ok(res),
+		Err(_) => {
+			error!("failed to derive kyber secret");
+		}
+	}
+}
+
 // This is a convenience function to generate the keypairs and an id at the same time
 pub fn init() -> ((Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), String) {
 	let keypair_kyber = kyber::keygen();
