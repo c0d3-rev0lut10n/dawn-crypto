@@ -68,11 +68,13 @@ pub fn get_curve_secret(secret_key: &[u8], public_key: &[u8]) -> Result<Vec<u8>,
 }
 
 // This is a convenience function to generate the keypairs and an id at the same time
-pub fn init() -> ((Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), String) {
+pub fn init() -> ((Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), String) {
 	let keypair_kyber = kyber::keygen();
 	let keypair_curve = x25519::keygen();
+	let keypair_kyber_for_salt = kyber::keygen();
+	let keypair_curve_for_salt = x25519::keygen();
 	let id = id::gen_id();
-	(keypair_kyber, keypair_curve, id)
+	(keypair_kyber, keypair_curve, keypair_kyber_for_salt, keypair_curve_for_salt, id)
 }
 
 // generate an id
