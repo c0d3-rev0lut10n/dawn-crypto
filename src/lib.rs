@@ -97,6 +97,19 @@ pub fn init() -> ((Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), (Vec<u8>, Vec<u8>), (V
 	(keypair_kyber, keypair_curve, keypair_kyber_for_salt, keypair_curve_for_salt, id)
 }
 
+pub fn derive_salts(kyber_secret: &[u8], curve_secret: &[u8]) -> Result<(Vec<u8>, Vec<u8>), String> {
+	if kyber_secret.len() != 32 || curve_secret.len() != 32 { return Err("invalid secret length".to_string()) }
+	let mut kyber_secret_a = kyber_secret.to_vec();
+	let mut kyber_secret_b = kyber_secret_a.clone();
+	let mut curve_secret_a = curve_secret.to_vec();
+	let mut curve_secret_b = curve_secret_a.clone();
+	kyber_secret_a.append(&mut curve_secret_a);
+	curve_secret_b.append(&mut kyber_secret_b);
+	let salt1 = hash::hash(&kyber_secret_a);
+	let salt2 = hash::hash(&curve_secret_b);
+	return Ok((salt1, salt2))
+}
+
 // generate an id
 pub fn id_gen() -> String {
 	id::gen_id()
