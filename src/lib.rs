@@ -213,7 +213,7 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	let mut enc_msg = enc_msg.to_vec();
 	
 	// check salt length
-	if salt.len() != 16 { error!(format!("CRITICAL: PFS key has wrong length. Expected 16 bytes, got {} bytes", salt.len())); }
+	if salt.len() != 16 { error!(format!("CRITICAL: salt has wrong length. Expected 16 bytes, got {} bytes", salt.len())); }
 	
 	// extract kyber ciphertext and symmetrically encrypted message
 	let symm_enc_msg = enc_msg.split_off(1568);
