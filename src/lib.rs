@@ -164,7 +164,7 @@ pub fn encrypt_msg(pub_key: &[u8], sec_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	if pfs_key.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 32 bytes, got {} bytes", pfs_key.len())); }
 	
 	// check salt length
-	if salt.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 16 bytes, got {} bytes", salt.len())); }
+	if salt.len() != 32 { error!(format!("CRITICAL: salt has wrong length. Expected 32 bytes, got {} bytes", salt.len())); }
 	
 	// derive new Perfect Forward Secrecy key
 	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key, &salt);
@@ -213,7 +213,7 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	let mut enc_msg = enc_msg.to_vec();
 	
 	// check salt length
-	if salt.len() != 32 { error!(format!("CRITICAL: salt has wrong length. Expected 16 bytes, got {} bytes", salt.len())); }
+	if salt.len() != 32 { error!(format!("CRITICAL: salt has wrong length. Expected 32 bytes, got {} bytes", salt.len())); }
 	
 	// extract kyber ciphertext and symmetrically encrypted message
 	let symm_enc_msg = enc_msg.split_off(1568);
