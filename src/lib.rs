@@ -164,7 +164,7 @@ pub fn encrypt_msg(pub_key: &[u8], sec_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	if pfs_key.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 32 bytes, got {} bytes", pfs_key.len())); }
 	
 	// check salt length
-	if salt.len() != 16 { error!(format!("CRITICAL: PFS key has wrong length. Expected 16 bytes, got {} bytes", salt.len())); }
+	if salt.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 16 bytes, got {} bytes", salt.len())); }
 	
 	// derive new Perfect Forward Secrecy key
 	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key, &salt);
