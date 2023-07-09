@@ -24,7 +24,7 @@ use chrono::{Utc, prelude::*};
 
 lazy_static! {
 	static ref IS_ID_SEED: Regex = Regex::new("^[0-9a-f]{64}$").unwrap();
-	static ref IS_SALT: Regex = Regex::new("^[0-9a-f]{16}$").unwrap();
+	static ref IS_SALT: Regex = Regex::new("^[0-9a-f]{64}$").unwrap();
 }
 
 // generate id seed
