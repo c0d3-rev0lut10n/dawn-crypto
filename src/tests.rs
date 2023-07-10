@@ -32,7 +32,7 @@ fn test_message_encryption() {
 	let (sign_pk, sign_sk) = sign_keygen();
 	let (other_sign_pk, other_sign_sk) = sign_keygen();
 	let pfs_key = rand::thread_rng().gen::<[u8; 32]>();
-	let salt = rand::thread_rng().gen::<[u8;16]>();
+	let salt = rand::thread_rng().gen::<[u8;32]>();
 	
 	// test encrypted and signed message
 	let (enc_msg, new_key) = encrypt_msg(&pk, Some(&sign_sk), &pfs_key, &salt, "testing message encryption").unwrap();
