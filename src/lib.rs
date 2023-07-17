@@ -34,6 +34,7 @@ use sign::*;
 use hex::{encode, decode};
 use rand::Rng;
 use crate::warning::*;
+pub use hash::hash;
 
 // Error return macro
 macro_rules! error{
