@@ -83,3 +83,21 @@ pub fn get_next(current: &str, salt: &str) -> Result<String, String> {
 	let hash = encode(&hash::hash(&hash_input));
 	Ok(hash)
 }
+
+
+// this returns the current timestamp
+pub fn get_current_timestamp() -> Result<String, String> {
+	// get current time
+	let c_time = Utc::now();
+	let date_modifier = c_time.date_naive().format("%Y%m%d").to_string();
+	let time_modifier = c_time.time().format("%H").to_string().parse::<u8>();
+	if time_modifier.is_err() {
+		return Err("failed to format time".to_string());
+	}
+	
+	// round to 4-hour resolution
+	let time_modifier = time_modifier.unwrap() / 4;
+	
+	let modifier = date_modifier + &time_modifier.to_string();
+	Ok(modifier)
+}

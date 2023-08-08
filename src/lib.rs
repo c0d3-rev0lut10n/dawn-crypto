@@ -35,6 +35,7 @@ use hex::{encode, decode};
 use rand::Rng;
 use crate::warning::*;
 pub use hash::hash;
+pub use id::get_current_timestamp;
 
 // Error return macro
 macro_rules! error{
