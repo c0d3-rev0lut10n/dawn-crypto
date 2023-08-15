@@ -13,7 +13,7 @@ ring = { version = "*" }
 openssl = { version = "*", features = ["vendored"]}
 openssl-src = { version = "*" }
 rand = { version = "*" }
-x25519-dalek = { version = "*" }
+x25519-dalek = { version = "*" , features = ["static_secrets"]}
 rand_core = { version = "0.5.1" }
 regex = { version = "*" }
 lazy_static = { version = "*" }

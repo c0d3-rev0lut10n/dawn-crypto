@@ -17,10 +17,10 @@
 */
 
 use x25519_dalek::{StaticSecret, PublicKey};
-use rand_core::OsRng;
+use rand::rngs::OsRng;
 
 pub fn keygen() -> (Vec<u8>, Vec<u8>) {
-	let secret = StaticSecret::new(OsRng);
+	let secret = StaticSecret::random_from_rng(OsRng);
 	let public_key = PublicKey::from(&secret);
 	let secret = secret.to_bytes().to_vec();
 	let public_key = public_key.as_bytes().to_vec();
