@@ -20,7 +20,7 @@ use hex::encode;
 use rand::Rng;
 use regex::Regex;
 use crate::hash;
-use chrono::{Utc, prelude::*};
+use chrono::{Duration, prelude::*};
 
 lazy_static! {
 	static ref IS_ID_SEED: Regex = Regex::new("^[0-9a-f]{64}$").unwrap();
@@ -100,4 +100,59 @@ pub fn get_current_timestamp() -> Result<String, String> {
 	
 	let modifier = date_modifier + &time_modifier.to_string();
 	Ok(modifier)
+}
+
+// this returns a list of all timestamps from the given input timestamp until the current timestamp
+pub fn get_all_timestamps_since(timestamp: &str) -> Result<Vec<String>, String> {
+	let time = match parse_timestamp(timestamp) {
+		Ok(res) => res,
+		Err(err) => return Err(err)
+	};
+	
+	let current_time = Utc::now().naive_utc();
+	
+	if time > current_time { return Err("timestamp is in the future".to_string()); }
+	
+	let mut timestamps = Vec::<String>::new();
+	let mut time_to_check = time;
+	let interval = Duration::hours(4);
+	timestamps.push(timestamp.to_string());
+	loop {
+		time_to_check = time_to_check.checked_add_signed(interval).unwrap();
+		if time_to_check > current_time { break; }
+		timestamps.push(get_timestamp(time_to_check))
+	}
+	
+	return Ok(timestamps)
+}
+
+fn parse_timestamp(timestamp: &str) -> Result<NaiveDateTime, String> {
+	if timestamp.len() != 9 {
+		return Err("invalid timestamp length".to_string());
+	}
+	
+	let timestamp_date = match NaiveDate::parse_from_str(&timestamp[0..8], "%Y%m%d") {
+		Ok(res) => res,
+		Err(_) => return Err("failed to parse the date".to_string())
+	};
+	let timestamp_hour = match &timestamp[8..9].parse::<u32>() { // parsing as u32 because chrono's and_hms_opt requires this as input. Otherwise, u8 would be fine obviously
+		Ok(res) => 4 * res,
+		Err(_) => return Err("failed to parse the time modifier".to_string())
+	};
+	let time = match timestamp_date.and_hms_opt(timestamp_hour, 0, 0) {
+		Some(res) => res,
+		None => return Err("failed to add the time modifier".to_string())
+	};
+	Ok(time)
+}
+
+fn get_timestamp(time: NaiveDateTime) -> String {
+	let date_modifier = time.format("%Y%m%d").to_string();
+	let time_modifier = time.format("%H").to_string().parse::<u8>().unwrap();
+	
+	// round to 4-hour resolution
+	let time_modifier = time_modifier / 4;
+	
+	let modifier = date_modifier + &time_modifier.to_string();
+	modifier
 }
