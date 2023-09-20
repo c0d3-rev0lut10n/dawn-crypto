@@ -129,3 +129,8 @@ fn test_get_curve_secret() {
 	let (curve_pk, curve_sk) = curve_keygen();
 	assert!(get_curve_secret(&curve_sk, &vec![]).is_err());
 }
+
+#[test]
+fn test_get_all_timestamps_since() {
+	println!("{:?}", get_all_timestamps_since("202308212"));
+}
