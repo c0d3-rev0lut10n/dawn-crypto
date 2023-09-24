@@ -127,7 +127,7 @@ pub fn mdc_gen() -> String {
 }
 
 // generate predictable message detail code using seed and temporary ID
-pub fn predictable_mdc_gen(mdc_seed: String, temp_id: String) -> String {
+pub fn predictable_mdc_gen(mdc_seed: &str, temp_id: &str) -> String {
 	let mut hash_input = mdc_seed.as_bytes().to_vec();
 	hash_input.append(&mut temp_id.as_bytes().to_vec());
 	return encode(hash::hash(&hash_input))
