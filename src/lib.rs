@@ -126,6 +126,13 @@ pub fn mdc_gen() -> String {
 	encode(id)
 }
 
+// generate predictable message detail code using seed and temporary ID
+pub fn predictable_mdc_gen(mdc_seed: String, temp_id: String) -> String {
+	let mut hash_input = mdc_seed.as_bytes().to_vec();
+	hash_input.append(&mut temp_id.as_bytes().to_vec());
+	return encode(hash::hash(&hash_input))
+}
+
 // generate a key for symmetric encryption (e.g. for sending files) using a CSPRNG
 pub fn sym_key_gen() -> Vec<u8> {
 	let key = rand::thread_rng()
