@@ -17,7 +17,7 @@
 */
 
 use pqcrypto::prelude::*;
-use pqcrypto::sign::sphincsharaka256frobust::{
+use pqcrypto::sign::sphincsshake192fsimple::{
 	detached_sign,
 	verify_detached_signature,
 	keypair,
