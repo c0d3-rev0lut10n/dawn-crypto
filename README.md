@@ -21,7 +21,7 @@ It also uses [rust-openssl](https://github.com/sfackler/rust-openssl), which pro
 The following functions all generate a tuple with a random keypair in the format (*public key*, *private key*):
 
 * **kyber_keygen()** generates a kyber keypair (used for asymmetric post-quantum encryption)
-* **sign_keygen()** generates a Sphincs-Haraka-256f-robust keypair (used for asymmetric post-quantum signing)
+* **sign_keygen()** generates a Sphincs-Shake-192f-robust keypair (used for asymmetric post-quantum signing)
 * **curve_keygen()** generates a x25519 keypair (traditional asymmetric encryption)
 
 **sym_keygen()** generates a random key you can use for manual symmetric encryption. This can be used for encrypting files that get stored on a content server. In this case, you would only transmit the key in your message, reducing bandwidth and data usage on the message server and offloading it to easily scalable and self-hostable content servers.
