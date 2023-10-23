@@ -62,7 +62,7 @@ fn test_message_encryption() {
 	let (enc_msg, new_key) = encrypt_msg(&pk, Some(&other_sign_sk), &pfs_key, &salt, "testing message encryption").unwrap();
 	assert_ne!(pfs_key.to_vec(), new_key);
 	assert_eq!(new_key.len(), 32);
-	assert_eq!(decrypt_msg(&sk, Some(&sign_pk), &pfs_key, &salt, &enc_msg), Err("signature verification failed".to_string()));
+	assert_eq!(decrypt_msg(&sk, Some(&sign_pk), &pfs_key, &salt, &enc_msg), Err("@dawn-crypto: signature verification failed".to_string()));
 }
 
 #[test]

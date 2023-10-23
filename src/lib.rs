@@ -41,7 +41,7 @@ pub use id::get_all_timestamps_since;
 // Error return macro
 macro_rules! error{
 	($a:expr) => {
-		return Err($a.to_string())
+		return Err(String::from("@dawn-crypto: ") + &$a)
 	}
 }
 
