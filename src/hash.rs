@@ -19,11 +19,11 @@
 use openssl::sha::sha256 as hash_function;
 
 pub fn hash(input: &[u8]) -> Vec<u8> {
-	return hash_function(&input).to_vec();
+	hash_function(input).to_vec()
 }
 
 pub fn get_pfs_key(key: &[u8], salt: &[u8]) -> Vec<u8> {
 	let mut hash_input = key.to_vec();
 	hash_input.append(&mut salt.to_vec());
-	return hash_function(&hash_input).to_vec();
+	hash_function(&hash_input).to_vec()
 }

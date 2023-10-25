@@ -110,7 +110,7 @@ pub fn derive_salts(kyber_secret: &[u8], curve_secret: &[u8]) -> Result<(Vec<u8>
 	curve_secret_b.append(&mut kyber_secret_b);
 	let salt1 = hash::hash(&kyber_secret_a);
 	let salt2 = hash::hash(&curve_secret_b);
-	return Ok((salt1, salt2))
+	Ok((salt1, salt2))
 }
 
 // generate an id
@@ -130,15 +130,14 @@ pub fn mdc_gen() -> String {
 pub fn predictable_mdc_gen(mdc_seed: &str, temp_id: &str) -> String {
 	let mut hash_input = mdc_seed.as_bytes().to_vec();
 	hash_input.append(&mut temp_id.as_bytes().to_vec());
-	return encode(hash::hash(&hash_input))
+	encode(hash::hash(&hash_input))
 }
 
 // generate a key for symmetric encryption (e.g. for sending files) using a CSPRNG
 pub fn sym_key_gen() -> Vec<u8> {
-	let key = rand::thread_rng()
+	rand::thread_rng()
 		.gen::<[u8; 32]>()
-		.to_vec();
-	key
+		.to_vec()
 }
 
 // get a temporary id from a seed and the default modifier
@@ -177,7 +176,7 @@ pub fn encrypt_msg(pub_key: &[u8], sec_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	if salt.len() != 32 { error!(format!("CRITICAL: salt has wrong length. Expected 32 bytes, got {} bytes", salt.len())); }
 	
 	// derive new Perfect Forward Secrecy key
-	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key, &salt);
+	let mut pfs_shared_secret = hash::get_pfs_key(pfs_key, salt);
 	let new_pfs_key = pfs_shared_secret.clone();
 	
 	// derive secret
@@ -186,18 +185,17 @@ pub fn encrypt_msg(pub_key: &[u8], sec_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	let secret = hash::hash(&shared_secret);
 	
 	// sign the message if requested
-	let signature;
-	if sec_key.is_some() {
-		signature = match sign(sec_key.unwrap(), msg) {
+	let signature = if let Some(sec_key) = sec_key {
+		match sign(sec_key, msg) {
 			Ok(sig) => encode(sig),
 			Err(_) => {
 				error!("failed to sign message")
 			}
-		};
+		}
 	}
 	else {
-		signature = "".to_string();
-	}
+		"".to_string()
+	};
 	let signed_message_string = signature + "." + msg;
 	let signed_message = signed_message_string.as_bytes();
 	
@@ -240,7 +238,7 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	if pfs_key.len() != 32 { error!(format!("CRITICAL: PFS key has wrong length. Expected 32 bytes, got {} bytes", pfs_key.len())); }
 	
 	// derive new Perfect Forward Secrecy key
-	let mut pfs_shared_secret = hash::get_pfs_key(&pfs_key, &salt);
+	let mut pfs_shared_secret = hash::get_pfs_key(pfs_key, salt);
 	let new_pfs_key = pfs_shared_secret.clone();
 	
 	// derive secret
@@ -255,14 +253,14 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	
 	// split signature and message
 	let signed_msg_string = String::from_utf8_lossy(&dec_msg);
-	let (signature, message) = match signed_msg_string.split_once(".") {
+	let (signature, message) = match signed_msg_string.split_once('.') {
 		Some((sig, msg)) => {
 			// since signatures are optional, handle a missing signature gracefully
-			if sig.len() == 0 {
+			if sig.is_empty() {
 				warning += NO_SIGNATURE;
 				return Ok((msg.to_string(), new_pfs_key, warning))
 			}
-			(decode(&sig), msg)
+			(decode(sig), msg)
 		},
 		None => { error!("signature not found"); }
 	};
@@ -272,8 +270,8 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	};
 	
 	// verify signature if requested
-	if pub_key.is_some() {
-		if verify(&signature, &pub_key.unwrap(), message).is_err() { error!("signature verification failed"); }
+	if pub_key.is_some() && verify(&signature, pub_key.unwrap(), message).is_err() {
+		error!("signature verification failed");
 	}
 	
 	// return the message and new PFS key
@@ -297,7 +295,7 @@ pub fn decrypt_data(encrypted_data: &[u8], key: &[u8]) -> Result<Vec<u8>, String
 // calculates security number for given keys
 // to use it correctly, key_a needs to be the key from the party that sent the init request
 pub fn derive_security_number(key_a: &[u8], key_b: &[u8]) -> Result<String, String> {
-	if key_a.len() == 0 || key_b.len() == 0 {
+	if key_a.is_empty() || key_b.is_empty() {
 		return Err("Both keys must be longer than zero bytes each".to_string())
 	}
 	let mut key_a = key_a.to_vec();

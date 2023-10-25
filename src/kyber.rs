@@ -29,7 +29,7 @@ pub fn keygen() -> (Vec<u8>, Vec<u8>) {
 pub fn get_shared_secret(pub_key: &[u8]) -> Result<(Vec<u8>, Vec<u8>), Box<dyn std::error::Error>> {
 	
 	// import public key
-	let pk = PublicKey::from_bytes(&pub_key)?;
+	let pk = PublicKey::from_bytes(pub_key)?;
 	
 	let (shared_secret, ciphertext) = encapsulate(&pk);
 	let shared_secret = shared_secret
@@ -46,10 +46,10 @@ pub fn get_shared_secret(pub_key: &[u8]) -> Result<(Vec<u8>, Vec<u8>), Box<dyn s
 pub fn decrypt_shared_secret(ciphertext: &[u8], sec_key: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
 	
 	// import ciphertext
-	let ciphertext = Ciphertext::from_bytes(&ciphertext)?;
+	let ciphertext = Ciphertext::from_bytes(ciphertext)?;
 	
 	// import secret key
-	let sk = SecretKey::from_bytes(&sec_key)?;
+	let sk = SecretKey::from_bytes(sec_key)?;
 	
 	Ok(decapsulate(&ciphertext, &sk).as_bytes().to_vec())
 }

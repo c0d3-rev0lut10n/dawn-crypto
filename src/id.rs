@@ -53,7 +53,7 @@ pub fn get_temp_id(id: &str) -> Result<String, String> {
 	
 	let modifier = date_modifier + &time_modifier.to_string();
 	let input = String::from(id) + &modifier;
-	let hash = encode(&hash::hash(input.as_bytes()));
+	let hash = encode(hash::hash(input.as_bytes()));
 	Ok(hash)
 }
 
@@ -66,7 +66,7 @@ pub fn get_custom_temp_id(id: &str, modifier: &str) -> Result<String, String> {
 		return Err("modifier was empty".to_string())
 	}
 	let input = String::from(id) + modifier;
-	let hash = encode(&hash::hash(input.as_bytes()));
+	let hash = encode(hash::hash(input.as_bytes()));
 	Ok(hash)
 }
 
@@ -80,7 +80,7 @@ pub fn get_next(current: &str, salt: &str) -> Result<String, String> {
 	}
 	let mut hash_input = current.as_bytes().to_vec();
 	hash_input.append(&mut salt.as_bytes().to_vec());
-	let hash = encode(&hash::hash(&hash_input));
+	let hash = encode(hash::hash(&hash_input));
 	Ok(hash)
 }
 
@@ -123,7 +123,7 @@ pub fn get_all_timestamps_since(timestamp: &str) -> Result<Vec<String>, String> 
 		timestamps.push(get_timestamp(time_to_check))
 	}
 	
-	return Ok(timestamps)
+	Ok(timestamps)
 }
 
 fn parse_timestamp(timestamp: &str) -> Result<NaiveDateTime, String> {
@@ -153,6 +153,5 @@ fn get_timestamp(time: NaiveDateTime) -> String {
 	// round to 4-hour resolution
 	let time_modifier = time_modifier / 4;
 	
-	let modifier = date_modifier + &time_modifier.to_string();
-	modifier
+	date_modifier + &time_modifier.to_string()
 }
