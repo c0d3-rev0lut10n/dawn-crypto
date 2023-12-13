@@ -16,8 +16,9 @@
 	along with Dawn.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-use pqcrypto::kem::kyber1024::*;
-use pqcrypto::prelude::*;
+// the traits below just need to be in scope, the name doesn't matter but can't be ambigous
+use pqcrypto_traits::kem::{PublicKey as PK, SecretKey as SK, SharedSecret as ShS, Ciphertext as CT};
+use pqcrypto_kyber::kyber1024::*;
 
 pub fn keygen() -> (Vec<u8>, Vec<u8>) {
 	let (pk, sk) = keypair();

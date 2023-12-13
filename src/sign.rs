@@ -16,8 +16,9 @@
 	along with Dawn.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-use pqcrypto::prelude::*;
-use pqcrypto::sign::sphincsshake192fsimple::{
+// the traits below just need to be in scope, the name doesn't matter but can't be ambigous
+use pqcrypto_traits::sign::{PublicKey as PK, SecretKey as SK, DetachedSignature as DS};
+use pqcrypto_sphincsplus::sphincsshake192fsimple::{
 	detached_sign,
 	verify_detached_signature,
 	keypair,

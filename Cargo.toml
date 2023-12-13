@@ -7,7 +7,9 @@ license = "GPL-3.0-or-later"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-pqcrypto = { version = "*" }
+pqcrypto-kyber = { version = "*" }
+pqcrypto-sphincsplus = { version = "*" }
+pqcrypto-traits = { version = "*" }
 hex = { version = "*" }
 ring = { version = "*" }
 openssl = { version = "*", features = ["vendored"]}
