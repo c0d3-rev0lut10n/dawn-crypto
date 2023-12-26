@@ -17,7 +17,7 @@
 */
 
 // the traits below just need to be in scope, the name doesn't matter but can't be ambigous
-use pqcrypto_traits::sign::{PublicKey as PK, SecretKey as SK, DetachedSignature as DS};
+use pqcrypto_traits::sign::{PublicKey as _, SecretKey as _, DetachedSignature as _};
 use pqcrypto_sphincsplus::sphincsshake192fsimple::{
 	detached_sign,
 	verify_detached_signature,
