@@ -76,7 +76,14 @@ fn test_curve_crypto() {
 fn test_mdc_gen() {
 	let mdc = mdc_gen();
 	let mdc_regex = Regex::new("^[0-9a-f]{8}$").unwrap();
-	assert!(mdc_regex.is_match(&mdc))
+	assert!(mdc_regex.is_match(&mdc));
+}
+
+#[test]
+fn test_predictable_mdc_gen() {
+	let predictable_mdc = predictable_mdc_gen("42", "tempid");
+	let mdc_regex = Regex::new("^[0-9a-f]{8}$").unwrap();
+	assert!(mdc_regex.is_match(&predictable_mdc));
 }
 
 #[test]
