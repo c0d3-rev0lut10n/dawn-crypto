@@ -141,3 +141,9 @@ fn test_get_curve_secret() {
 fn test_get_all_timestamps_since() {
 	println!("{:?}", get_all_timestamps_since("202308212"));
 }
+
+#[test]
+fn test_timestamp_from_unix() {
+	assert_eq!(timestamp_from_unix(1712864643).unwrap(), "202404114".to_string());
+	assert_eq!(timestamp_from_unix(1712867643).unwrap(), "202404115".to_string());
+}

@@ -102,6 +102,22 @@ pub fn get_current_timestamp() -> Result<String, String> {
 	Ok(modifier)
 }
 
+// unix timestamp to Dawn timestamp
+pub fn timestamp_from_unix(timestamp: i64) -> Result<String, String> {
+	let time = Utc.timestamp_opt(timestamp, 0u32).unwrap();
+	let date_modifier = time.date_naive().format("%Y%m%d").to_string();
+	let time_modifier = time.time().format("%H").to_string().parse::<u8>();
+	if time_modifier.is_err() {
+		return Err("failed to format time".to_string());
+	}
+	
+	// round to 4-hour resolution
+	let time_modifier = time_modifier.unwrap() / 4;
+	
+	let modifier = date_modifier + &time_modifier.to_string();
+	Ok(modifier)
+}
+
 // this returns a list of all timestamps from the given input timestamp until the current timestamp
 pub fn get_all_timestamps_since(timestamp: &str) -> Result<Vec<String>, String> {
 	let time = match parse_timestamp(timestamp) {
