@@ -36,6 +36,7 @@ use rand::Rng;
 use crate::warning::*;
 pub use hash::hash;
 pub use id::get_current_timestamp;
+pub use id::next_timestamp;
 pub use id::get_all_timestamps_since;
 pub use id::timestamp_from_unix;
 

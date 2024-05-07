@@ -138,6 +138,14 @@ fn test_get_curve_secret() {
 }
 
 #[test]
+fn test_next_timestamp() {
+	let timestamp1 = "202405071";
+	let timestamp2 = "202411235";
+	assert_eq!(next_timestamp(timestamp1), Ok("202405072".to_string()));
+	assert_eq!(next_timestamp(timestamp2), Ok("202411240".to_string()));
+}
+
+#[test]
 fn test_get_all_timestamps_since() {
 	println!("{:?}", get_all_timestamps_since("202308212"));
 }

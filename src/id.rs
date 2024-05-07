@@ -118,6 +118,17 @@ pub fn timestamp_from_unix(timestamp: i64) -> Result<String, String> {
 	Ok(modifier)
 }
 
+// get next Dawn timestamp
+pub fn next_timestamp(timestamp: &str) -> Result<String, String> {
+	let time = match parse_timestamp(timestamp) {
+		Ok(res) => res,
+		Err(err) => return Err(err)
+	};
+	let interval = Duration::hours(4);
+	let new_time = time.checked_add_signed(interval).unwrap();
+	Ok(get_timestamp(new_time))
+}
+
 // this returns a list of all timestamps from the given input timestamp until the current timestamp
 pub fn get_all_timestamps_since(timestamp: &str) -> Result<Vec<String>, String> {
 	let time = match parse_timestamp(timestamp) {
