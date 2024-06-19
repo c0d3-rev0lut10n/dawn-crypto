@@ -251,7 +251,7 @@ pub fn decrypt_msg(sec_key: &[u8], pub_key: Option<&[u8]>, pfs_key: &[u8], salt:
 	
 	// decrypt message
 	let dec_msg = symm::decrypt(&symm_enc_msg, &secret);
-	if dec_msg.is_err() { error!("symmetric decryption failed"); }
+	if dec_msg.is_err() { error!(&format!("symmetric decryption failed: secret: {}, error: {}", encode(&secret), dec_msg.unwrap_err())); }
 	let dec_msg = dec_msg.unwrap();
 	
 	// split signature and message
