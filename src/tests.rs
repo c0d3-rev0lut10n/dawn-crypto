@@ -151,6 +151,15 @@ fn test_get_all_timestamps_since() {
 }
 
 #[test]
+fn test_get_all_timestamps() {
+	let now = 1720384317 + 15 * 3600;
+	let timestamp = "202407075";
+	let res = get_all_timestamps(timestamp, now).unwrap();
+	let reference = vec!["202407075", "202407080", "202407081", "202407082"];
+	assert_eq!(res, reference);
+}
+
+#[test]
 fn test_timestamp_from_unix() {
 	assert_eq!(timestamp_from_unix(1712864643).unwrap(), "202404114".to_string());
 	assert_eq!(timestamp_from_unix(1712867643).unwrap(), "202404115".to_string());
