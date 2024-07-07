@@ -1,4 +1,4 @@
-/*	Copyright (c) 2022, 2023 Laurenz Werner
+/*	Copyright (c) 2022-2024 Laurenz Werner
 	
 	This file is part of Dawn.
 	
@@ -138,6 +138,28 @@ pub fn get_all_timestamps_since(timestamp: &str) -> Result<Vec<String>, String> 
 	
 	let current_time = Utc::now().naive_utc();
 	
+	if time > current_time { return Err("timestamp is in the future".to_string()); }
+	
+	let mut timestamps = Vec::<String>::new();
+	let mut time_to_check = time;
+	let interval = Duration::hours(4);
+	timestamps.push(timestamp.to_string());
+	loop {
+		time_to_check = time_to_check.checked_add_signed(interval).unwrap();
+		if time_to_check > current_time { break; }
+		timestamps.push(get_timestamp(time_to_check))
+	}
+	
+	Ok(timestamps)
+}
+
+// list all timestamps from the given input timestamp to the given unix timestamp
+pub fn get_all_timestamps(timestamp: &str, now: i64) -> Result<Vec<String>, String> {
+	let time = match parse_timestamp(timestamp) {
+		Ok(res) => res,
+		Err(err) => return Err(err)
+	};
+	let current_time = Utc.timestamp_opt(now, 0u32).unwrap().naive_utc();
 	if time > current_time { return Err("timestamp is in the future".to_string()); }
 	
 	let mut timestamps = Vec::<String>::new();
